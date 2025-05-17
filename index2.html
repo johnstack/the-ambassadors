@@ -70,6 +70,7 @@
     let imgRotation = 0;
     let scale = 1;
     let initialDistance = null;
+    let translateX = 0, translateY = 0;
 
     // Mouse Events
     container.addEventListener('mousedown', (e) => {
@@ -80,7 +81,7 @@
 
     window.addEventListener('mousemove', (e) => {
       if (!isDragging) return;
-      handleRotation(e.clientX, e.clientY);
+      handleGesture(e.clientX, e.clientY);
     });
 
     window.addEventListener('mouseup', () => {
@@ -101,15 +102,15 @@
     container.addEventListener('touchmove', (e) => {
       if (e.touches.length === 1 && isDragging) {
         e.preventDefault();
-        handleRotation(e.touches[0].clientX, e.touches[0].clientY);
+        handleGesture(e.touches[0].clientX, e.touches[0].clientY);
       } else if (e.touches.length === 2) {
         e.preventDefault();
         const currentDistance = getDistance(e.touches[0], e.touches[1]);
         if (initialDistance) {
           const zoom = currentDistance / initialDistance;
           scale = Math.min(Math.max(zoom, 0.5), 3); // Clamp zoom between 0.5x and 3x
-          image.style.transform = `rotate(${imgRotation}deg) scale(${scale})`;
         }
+        updateImageTransform();
       }
     }, { passive: false });
 
@@ -122,19 +123,25 @@
       }
     });
 
-    function handleRotation(currentX, currentY) {
+    function handleGesture(currentX, currentY) {
       const deltaX = currentX - lastX;
       const deltaY = currentY - lastY;
 
       rotY += deltaX * 0.3;
       rotX -= deltaY * 0.3;
       imgRotation += deltaX * 0.1;
+      translateX += deltaX;
+      translateY += deltaY;
 
       container.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-      image.style.transform = `rotate(${imgRotation}deg) scale(${scale})`;
+      updateImageTransform();
 
       lastX = currentX;
       lastY = currentY;
+    }
+
+    function updateImageTransform() {
+      image.style.transform = `rotate(${imgRotation}deg) scale(${scale}) translate(${translateX}px, ${translateY}px)`;
     }
 
     function getDistance(touch1, touch2) {
