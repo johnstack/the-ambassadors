@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Ambassadors by Hans Holbein the Younger</title>
+  <title>3D Image Drag with Rotation</title>
   <style>
     body {
       margin: 0;
@@ -16,8 +16,8 @@
     }
 
     .scene {
-      width: 90vh;
-      height: auto;
+      width: 800px;
+      height: 600px;
       perspective: 1000px;
     }
 
@@ -27,6 +27,7 @@
       transform-style: preserve-3d;
       transition: transform 0.1s ease;
       cursor: grab;
+      touch-action: none;
     }
 
     .image-container:active {
@@ -41,22 +42,12 @@
       transform: translateZ(0);
       backface-visibility: hidden;
     }
-    
-    img {
-    	user-drag: none;
-    	-webkit-user-drag: none;
-    	user-select: none;
-  	  -moz-user-select: none;
-  	  -webkit-user-select: none;
-  	  -ms-user-select: none;
-}    
-    
   </style>
 </head>
 <body>
   <div class="scene">
     <div class="image-container" id="imageContainer">
-      <img src="NG1314.jpg" alt="The Ambassadors by Hans Holbein the Younger" id="image" />
+      <img src="https://media.leviathan.heni.com/wp-content/uploads/2020/06/15222507/Medium-Ambassadors-large-1-scaled.jpg" alt="3D Image" id="image" />
     </div>
   </div>
 
@@ -68,6 +59,7 @@
     let rotX = 0, rotY = 0;
     let imgRotation = 0;
 
+    // Mouse Events
     container.addEventListener('mousedown', (e) => {
       isDragging = true;
       lastX = e.clientX;
@@ -76,23 +68,44 @@
 
     window.addEventListener('mousemove', (e) => {
       if (!isDragging) return;
-      const deltaX = e.clientX - lastX;
-      const deltaY = e.clientY - lastY;
-
-      rotY += deltaX * 0.3;
-      rotX -= deltaY * 0.3;
-      imgRotation += deltaX * 0.1; // Adjust image rotation
-
-      container.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-      image.style.transform = `rotate(${imgRotation}deg)`;
-
-      lastX = e.clientX;
-      lastY = e.clientY;
+      handleRotation(e.clientX, e.clientY);
     });
 
     window.addEventListener('mouseup', () => {
       isDragging = false;
     });
+
+    // Touch Events
+    container.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+    });
+
+    container.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      handleRotation(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: false });
+
+    container.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    function handleRotation(currentX, currentY) {
+      const deltaX = currentX - lastX;
+      const deltaY = currentY - lastY;
+
+      rotY += deltaX * 0.3;
+      rotX -= deltaY * 0.3;
+      imgRotation += deltaX * 0.1;
+
+      container.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+      image.style.transform = `rotate(${imgRotation}deg)`;
+
+      lastX = currentX;
+      lastY = currentY;
+    }
   </script>
 </body>
 </html>
