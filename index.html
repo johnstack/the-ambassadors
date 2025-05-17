@@ -16,8 +16,8 @@
     }
 
     .scene {
-      width: 800px;
-      height: 600px;
+      width: 90vh;
+      height: auto;
       perspective: 1000px;
     }
 
@@ -41,6 +41,16 @@
       transform: translateZ(0);
       backface-visibility: hidden;
     }
+    
+    img {
+    	user-drag: none;
+    	-webkit-user-drag: none;
+    	user-select: none;
+  	  -moz-user-select: none;
+  	  -webkit-user-select: none;
+  	  -ms-user-select: none;
+}    
+    
   </style>
 </head>
 <body>
